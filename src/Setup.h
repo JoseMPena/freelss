@@ -1,0 +1,91 @@
+/*
+ ****************************************************************************
+ *  Copyright (c) 2015 Uriah Liggett <freelaserscanner@gmail.com>           *
+ *	This file is part of FreeLSS.                                           *
+ *                                                                          *
+ *  FreeLSS is free software: you can redistribute it and/or modify         *
+ *  it under the terms of the GNU General Public License as published by    *
+ *  the Free Software Foundation, either version 3 of the License, or       *
+ *  (at your option) any later version.                                     *
+ *                                                                          *
+ *  FreeLSS is distributed in the hope that it will be useful,              *
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of          *
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the           *
+ *  GNU General Public License for more details.                            *
+ *                                                                          *
+ *   You should have received a copy of the GNU General Public License      *
+ *   along with FreeLSS.  If not, see <http://www.gnu.org/licenses/>.       *
+ ****************************************************************************
+*/
+
+#pragma once
+
+namespace freelss
+{
+
+/**
+ * Holds setup information about the hardware.
+ */
+class Setup
+{
+public:
+
+	/** Returns the singleton instance */
+	static Setup * get();
+	static void release();
+
+	/** Encodes property information to the properties vector */
+	void encodeProperties(std::vector<Property>& properties);
+
+	/** Decodes property information from the given vector  */
+	void decodeProperties(const std::vector<Property>& properties);
+
+	/**
+	 * Reinitializes the Setup object to its default settings.  Some settings
+	 *  such as serial number and HTTP port are not changed.
+	 */
+	void reinit();
+
+	Vector3 cameraLocation;
+	Vector3 leftLaserLocation;
+	Vector3 rightLaserLocation;
+	/** Hardware is now driven by the Arduino G-code firmware over USB; the
+	 *  legacy wiringPi pin fields have been removed.  These knobs configure
+	 *  the serial transport and the firmware-side feed-rate. */
+	std::string arduinoSerialPath; // empty = autodetect
+	int arduinoBaudRate;
+	int feedRate;                  // steps/sec, passed verbatim as F<n>
+	int motorDirPinValue;          // repurposed: 0 = forward, 1 = invert sign
+	int stepsPerRevolution;
+	int motorStepDelay;            // legacy; only used to derive feedRate when feedRate <= 0
+	int httpPort;
+	std::string serialNumber;
+	UnitOfLength unitOfLength;
+	bool haveLaserPlaneNormals;
+	Vector3 leftLaserPlaneNormal;
+	Vector3 rightLaserPlaneNormal;
+	PixelLocation leftLaserCalibrationTop;
+	PixelLocation leftLaserCalibrationBottom;
+	PixelLocation rightLaserCalibrationTop;
+	PixelLocation rightLaserCalibrationBottom;
+	bool enableLighting;
+	bool enableAuthentication;
+	std::string passwordHash;
+	bool enableUsbNetworkConfig;
+	bool enableExperimental;
+	bool enableWebGLWhenAvailable;
+	bool enablePointCloudRenderer;
+	bool overrideFocalLength;
+	std::string overriddenFocalLength;
+	bool mmalFlipRedBlue;
+	real maxObjectSize;
+private:
+
+	/** Default Constructor */
+	Setup();
+
+	/** Singleton instance */
+	static Setup * m_instance;
+};
+
+}
